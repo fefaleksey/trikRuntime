@@ -116,6 +116,8 @@ public slots:
 	ColorSensorInterface *colorSensor(const QString &port) override;
 
 	ObjectSensorInterface *objectSensor(const QString &port) override;
+	
+	QByteArray getStillImage(const QString &port) override;
 
 	SoundSensorInterface *soundSensor(const QString &port) override;
 

@@ -125,6 +125,39 @@ QScriptValue timeInterval(QScriptContext *context, QScriptEngine *engine)
 	return engine->toScriptValue(result);
 }
 
+QScriptValue getPhoto(QScriptContext *context,  QScriptEngine *engine)
+{
+    QScriptValue brickValue = engine->globalObject().property("brick");
+    QObject *qObjBrick = brickValue.toQObject();
+    if (qObjBrick)
+    {
+        BrickInterface *brick = qobject_cast<BrickInterface*>(qObjBrick);
+        if (brick)
+        {
+            QByteArray data = brick->getStillImage("/dev/video0");
+            QList<int> result;
+            std::for_each(data.begin(), data.end(),
+                [&result](char byteValue)
+                {
+                    result.append(static_cast<unsigned int>(byteValue));
+                }
+            );
+            return engine->toScriptValue(result);
+        }
+        else
+        {
+            QLOG_ERROR() << "script getPhoto failed at downcasting qObject to Brick";
+            return brickValue;
+        }
+    }
+    else
+    {
+        QLOG_ERROR() << "script getPhoto failed to get brick Obj";
+        return brickValue;
+    }
+
+}
+
 ScriptEngineWorker::ScriptEngineWorker(trikControl::BrickInterface &brick
 		, trikNetwork::MailboxInterface * const mailbox
 		, ScriptExecutionControl &scriptControl
@@ -141,6 +174,7 @@ ScriptEngineWorker::ScriptEngineWorker(trikControl::BrickInterface &brick
 
 	registerUserFunction("print", print);
 	registerUserFunction("timeInterval", timeInterval);
+    registerUserFunction("getPhoto", getPhoto);
 
 	REGISTER_DEVICES_WITH_TEMPLATE(REGISTER_METATYPE)
 }
