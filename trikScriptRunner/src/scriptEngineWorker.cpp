@@ -49,6 +49,7 @@ using namespace trikScriptRunner;
 using namespace trikControl;
 using namespace trikNetwork;
 
+Q_DECLARE_METATYPE(QVector<uint8_t>)
 Q_DECLARE_METATYPE(QVector<int>)
 Q_DECLARE_METATYPE(trikKernel::TimeVal)
 Q_DECLARE_METATYPE(QTimer*)
@@ -134,12 +135,13 @@ QScriptValue getPhoto(QScriptContext *context,  QScriptEngine *engine)
         BrickInterface *brick = qobject_cast<BrickInterface*>(qObjBrick);
         if (brick)
         {
-            QByteArray data = brick->getStillImage("/dev/video0");
+            auto data = brick->getStillImage(context->argument(0).toString());
             QList<int> result;
+            result.reserve(data.count());
             std::for_each(data.begin(), data.end(),
                 [&result](char byteValue)
                 {
-                    result.append(static_cast<unsigned int>(byteValue));
+                    result.push_back(static_cast<unsigned int>(byteValue));
                 }
             );
             return engine->toScriptValue(result);
@@ -147,13 +149,13 @@ QScriptValue getPhoto(QScriptContext *context,  QScriptEngine *engine)
         else
         {
             QLOG_ERROR() << "script getPhoto failed at downcasting qObject to Brick";
-            return brickValue;
+            return QScriptValue();
         }
     }
     else
     {
         QLOG_ERROR() << "script getPhoto failed to get brick Obj";
-        return brickValue;
+        return QScriptValue();
     }
 
 }
@@ -362,8 +364,9 @@ QScriptEngine * ScriptEngineWorker::createScriptEngine(bool supportThreads)
 
 	Scriptable<QTimer>::registerMetatype(engine);
 	qScriptRegisterMetaType(engine, timeValToScriptValue, timeValFromScriptValue);
-	qScriptRegisterSequenceMetaType<QVector<int>>(engine);
+    qScriptRegisterSequenceMetaType<QVector<int>>(engine);
 	qScriptRegisterSequenceMetaType<QStringList>(engine);
+    qScriptRegisterSequenceMetaType<QVector<uint8_t>>(engine);
 
 	engine->globalObject().setProperty("brick", engine->newQObject(&mBrick));
 	engine->globalObject().setProperty("script", engine->newQObject(&mScriptControl));
