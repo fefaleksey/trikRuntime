@@ -126,37 +126,37 @@ QScriptValue timeInterval(QScriptContext *context, QScriptEngine *engine)
 	return engine->toScriptValue(result);
 }
 
-QScriptValue getPhoto(QScriptContext *context,  QScriptEngine *engine)
+QScriptValue getPhoto(QScriptContext *context,	QScriptEngine *engine)
 {
-    QScriptValue brickValue = engine->globalObject().property("brick");
-    QObject *qObjBrick = brickValue.toQObject();
-    if (qObjBrick)
-    {
-        BrickInterface *brick = qobject_cast<BrickInterface*>(qObjBrick);
-        if (brick)
-        {
-            auto data = brick->getStillImage(context->argument(0).toString());
-            QList<int> result;
-            result.reserve(data.count());
-            std::for_each(data.begin(), data.end(),
-                [&result](char byteValue)
-                {
-                    result.push_back(static_cast<unsigned int>(byteValue));
-                }
-            );
-            return engine->toScriptValue(result);
-        }
-        else
-        {
-            QLOG_ERROR() << "script getPhoto failed at downcasting qObject to Brick";
-            return QScriptValue();
-        }
-    }
-    else
-    {
-        QLOG_ERROR() << "script getPhoto failed to get brick Obj";
-        return QScriptValue();
-    }
+	QScriptValue brickValue = engine->globalObject().property("brick");
+	QObject *qObjBrick = brickValue.toQObject();
+	if (qObjBrick)
+	{
+		BrickInterface *brick = qobject_cast<BrickInterface*>(qObjBrick);
+		if (brick)
+		{
+			auto data = brick->getStillImage(context->argument(0).toString());
+			QList<int> result;
+			result.reserve(data.count());
+			std::for_each(data.begin(), data.end(),
+				[&result](char byteValue)
+				{
+					result.push_back(static_cast<unsigned int>(byteValue));
+				}
+			);
+			return engine->toScriptValue(result);
+		}
+		else
+		{
+			QLOG_ERROR() << "script getPhoto failed at downcasting qObject to Brick";
+			return QScriptValue();
+		}
+	}
+	else
+	{
+		QLOG_ERROR() << "script getPhoto failed to get brick Obj";
+		return QScriptValue();
+	}
 
 }
 
@@ -176,7 +176,7 @@ ScriptEngineWorker::ScriptEngineWorker(trikControl::BrickInterface &brick
 
 	registerUserFunction("print", print);
 	registerUserFunction("timeInterval", timeInterval);
-    registerUserFunction("getPhoto", getPhoto);
+	registerUserFunction("getPhoto", getPhoto);
 
 	REGISTER_DEVICES_WITH_TEMPLATE(REGISTER_METATYPE)
 }
@@ -364,9 +364,9 @@ QScriptEngine * ScriptEngineWorker::createScriptEngine(bool supportThreads)
 
 	Scriptable<QTimer>::registerMetatype(engine);
 	qScriptRegisterMetaType(engine, timeValToScriptValue, timeValFromScriptValue);
-    qScriptRegisterSequenceMetaType<QVector<int>>(engine);
+	qScriptRegisterSequenceMetaType<QVector<int>>(engine);
 	qScriptRegisterSequenceMetaType<QStringList>(engine);
-    qScriptRegisterSequenceMetaType<QVector<uint8_t>>(engine);
+	qScriptRegisterSequenceMetaType<QVector<uint8_t>>(engine);
 
 	engine->globalObject().setProperty("brick", engine->newQObject(&mBrick));
 	engine->globalObject().setProperty("script", engine->newQObject(&mScriptControl));

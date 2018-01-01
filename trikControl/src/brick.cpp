@@ -393,24 +393,21 @@ ObjectSensorInterface *Brick::objectSensor(const QString &port)
 
 QVector<uint8_t> Brick::getStillImage(const QString &port)
 {
-    QScopedPointer<QCamera> camera;
-    qDebug() << "port = " << port;
-    qDebug() << "count of cameras = " << QCameraInfo::availableCameras().count();
-	for (const QCameraInfo &cameraInfo : QCameraInfo::availableCameras()) 
+	QScopedPointer<QCamera> camera;
+	QLOG_INFO() << "Available cameras:" << QCameraInfo::availableCameras().count();
+	for (auto & cameraInfo : QCameraInfo::availableCameras())
 	{
-        if (cameraInfo.deviceName() == port)
+		if (cameraInfo.deviceName() == port)
 		{
-		        QScopedPointer<QCamera>(new QCamera(cameraInfo)).swap(camera);
-                qDebug() << "Camera is inited";
-                break;
+				QScopedPointer<QCamera>(new QCamera(cameraInfo)).swap(camera);
+				break;
 		}
-        else qDebug() << "cameraInfo.deviceName() = " << cameraInfo.deviceName();
 	}
 
 	QScopedPointer<QCameraImageCapture> imageCapture (new QCameraImageCapture(camera.data()));
 
 	imageCapture->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
-	
+
 	QObject::connect(imageCapture.data(), &QCameraImageCapture::readyForCaptureChanged, [this, &imageCapture, &camera](bool ready)
 		{
 			if (ready)
@@ -422,9 +419,9 @@ QVector<uint8_t> Brick::getStillImage(const QString &port)
 		}
 	);
 
-    QVector<uint8_t> imageByteVector;		
-		
-    QObject::connect(imageCapture.data(), &QCameraImageCapture::imageCaptured, [&imageByteVector] (int id, const QImage &imgOrig)
+	QVector<uint8_t> imageByteVector;
+
+	QObject::connect(imageCapture.data(), &QCameraImageCapture::imageCaptured, [&imageByteVector] (int, const QImage &imgOrig)
 		{
 			// Some possible formats:
 
@@ -432,32 +429,32 @@ QVector<uint8_t> Brick::getStillImage(const QString &port)
 			// QImage::Format_RGB16
 			// QImage::Format_Grayscale8
 			// QImage::Format_Mono
-            constexpr auto DESIRED_FORMAT = QImage::Format_RGB32;
-            constexpr auto SIZE_X = 320;
-            constexpr auto SIZE_Y = 240;
-				
+			constexpr auto DESIRED_FORMAT = QImage::Format_RGB32;
+			constexpr auto SIZE_X = 320;
+			constexpr auto SIZE_Y = 240;
+
 			const QImage &img = imgOrig.format() == DESIRED_FORMAT ? imgOrig : imgOrig.convertToFormat(DESIRED_FORMAT);
-            const QImage &scaledImg = img.height() == SIZE_X && img.width() == SIZE_Y ? img : img.scaled(SIZE_X, SIZE_Y); //, Qt::KeepAspectRatioByExpanding
-            auto cb = scaledImg.constBits();
-            imageByteVector.resize(scaledImg.byteCount());
-            std::copy(cb, cb+scaledImg.byteCount(), imageByteVector.begin());
-            // need reinterpret_cast, because QByteArray constructor needs const char*, but img.constBits() returns const uchar*
-            // imageByteArray = std::move(QByteArray(reinterpret_cast<const char*>(img.constBits()), img.byteCount()));
+			const QImage &scaledImg = img.height() == SIZE_X && img.width() == SIZE_Y ? img : img.scaled(SIZE_X, SIZE_Y); //, Qt::KeepAspectRatioByExpanding
+			auto cb = scaledImg.constBits();
+			imageByteVector.resize(scaledImg.byteCount());
+			std::copy(cb, cb + scaledImg.byteCount(), imageByteVector.begin());
+			// need reinterpret_cast, because QByteArray constructor needs const char*, but img.constBits() returns const uchar*
+			// imageByteArray = std::move(QByteArray(reinterpret_cast<const char*>(img.constBits()), img.byteCount()));
 		}
-	);	
+	);
 
 	camera->setCaptureMode(QCamera::CaptureStillImage);
 	camera->start();
-    while (	imageByteVector.isEmpty() )
-	{	
+	while ( imageByteVector.isEmpty() )
+	{
 		QEventLoop eventLoop;
-		QObject::connect(imageCapture.data(), &QCameraImageCapture::imageAvailable, [&eventLoop](int id, const QVideoFrame &buffer){
-				eventLoop.quit();		
+		QObject::connect(imageCapture.data(), &QCameraImageCapture::imageAvailable, [&eventLoop](int, const QVideoFrame &){
+				eventLoop.quit();
 			}
 		);
 		eventLoop.exec();
 	}
-    return imageByteVector;
+	return imageByteVector;
 }
 
 
