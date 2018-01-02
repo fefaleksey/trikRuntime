@@ -408,6 +408,9 @@ QVector<uint8_t> Brick::getStillImage(const QString &port)
 
 	imageCapture->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
 
+	const auto & formats = imageCapture->supportedBufferFormats();
+	QLOG_INFO() << "Supported buffer formats: " << formats;
+
 	QObject::connect(imageCapture.data(), &QCameraImageCapture::readyForCaptureChanged, [this, &imageCapture, &camera](bool ready)
 		{
 			if (ready)
@@ -430,6 +433,7 @@ QVector<uint8_t> Brick::getStillImage(const QString &port)
 			// QImage::Format_Grayscale8
 			// QImage::Format_Mono
 			constexpr auto DESIRED_FORMAT = QImage::Format_RGB32;
+
 			constexpr auto SIZE_X = 320;
 			constexpr auto SIZE_Y = 240;
 
