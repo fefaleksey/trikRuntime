@@ -33,8 +33,11 @@ public:
 	Status status() const override;
 
 public slots:
-	/// Sends data to current device, if it is connected.
-	void send(int reg, int value) override;
+	/// Sends byte to current device, if it is connected.
+	void sendByte(int reg, int value) override;
+
+	/// Sends word to current device, if it is connected.
+	void sendWord(int reg, int value) override;
 
 	/// Reads data by given I2C command number and returns the result.
 	int read(int reg) override;
