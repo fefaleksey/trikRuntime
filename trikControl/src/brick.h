@@ -53,6 +53,7 @@ class TonePlayer;
 class VectorSensor;
 class CameraDeviceInterface;
 class I2cCommunicator;
+class LaserSensor;
 
 /// Class representing TRIK controller board and devices installed on it, also provides access
 /// to peripherals like motors and sensors.
@@ -123,6 +124,8 @@ public slots:
 
 	QVector<uint8_t> getStillImage() override;
 
+	LaserSensorInterface *laserSensor() override;
+
 	SoundSensorInterface *soundSensor(const QString &port) override;
 
 	EncoderInterface *encoder(const QString &port) override;
@@ -188,6 +191,7 @@ private:
 	QHash<QString, Fifo *> mFifos;  // Has ownership.
 	QHash<QString, EventDeviceInterface *> mEventDevices;  // Has ownership.
 	QHash<uint16_t, I2cDeviceInterface *> mI2cDevices;  // Has ownership.
+	LaserSensorInterface *mLaserSensor; // Has ownership
 
 	QString mPlayWavFileCommand;
 	QString mPlayMp3FileCommand;

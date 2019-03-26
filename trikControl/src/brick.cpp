@@ -56,6 +56,7 @@
 #include "i2cDevice.h"
 #include "mspI2cCommunicator.h"
 #include "i2cCommunicator.h"
+#include "lasersensor.h"
 
 #include "mspBusAutoDetector.h"
 #include "moduleLoader.h"
@@ -409,6 +410,16 @@ I2cDeviceInterface *Brick::i2c(int bus, int address)
 		mI2cDevices.insert(mhash, i2cDevice);
 		return i2cDevice;
 	}
+}
+
+LaserSensorInterface *Brick::laserSensor()
+{
+	if (mLaserSensor == nullptr) {
+		int bus = mConfigurer.attributeByDevice("laserSensor", "bus").toInt();
+		int address = mConfigurer.attributeByDevice("laserSensor", "address").toInt();
+		mLaserSensor = new LaserSensor(i2c(bus, address));
+	}
+	return mLaserSensor;
 }
 
 QVector<uint8_t> Brick::getStillImage()

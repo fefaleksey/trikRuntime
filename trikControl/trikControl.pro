@@ -105,7 +105,10 @@ HEADERS += \
 	$$PWD/src/v4l2CameraImplementation.h \
 	$$PWD/src/imitationCameraImplementation.h \
 	$$PWD/src/i2cDevice.h \
-	$$PWD/src/i2cCommunicator.h
+	$$PWD/src/i2cCommunicator.h \
+    include/trikControl/lasersensorinterface.h \
+    src/lasersensor.h \
+    src/lasersensorworker.h
 #	$$PWD/src/headingSensor.h \
 
 SOURCES += \
@@ -163,7 +166,9 @@ SOURCES += \
 	$$PWD/src/imitationCameraImplementation.cpp \
 	$$PWD/src/cameraImplementationInterface.cpp \
 	$$PWD/src/i2cDevice.cpp \
-	$$PWD/src/i2cCommunicator.cpp
+	$$PWD/src/i2cCommunicator.cpp \
+    src/lasersensor.cpp \
+    src/lasersensorworker.cpp
 #	$$PWD/src/headingSensor.cpp \
 
 
