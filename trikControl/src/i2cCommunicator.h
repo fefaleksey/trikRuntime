@@ -45,6 +45,8 @@ public:
 	/// Send data to current device, if it is connected.
 	void send(const QByteArray &data);
 
+	void sendBlockData(unsigned char command, unsigned char length, const unsigned char *values);
+
 	/// Reads data by given I2C command number and returns the result.
 	int read(const QByteArray &data);
 

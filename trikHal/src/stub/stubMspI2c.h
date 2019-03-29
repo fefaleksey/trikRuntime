@@ -25,6 +25,7 @@ class StubMspI2C : public MspI2cInterface
 public:
 	void send(const QByteArray &data) override;
 	int read(const QByteArray &data) override;
+	void sendBlockData(unsigned char command, unsigned char length, const unsigned char *values);
 	bool connect(const QString &devicePath, int deviceId) override;
 	void disconnect() override;
 };

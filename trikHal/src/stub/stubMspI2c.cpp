@@ -29,6 +29,12 @@ int StubMspI2C::read(const QByteArray &data)
 	return 0;
 }
 
+/// TODO: fix this shit
+void StubMspI2C::sendBlockData(unsigned char command, unsigned char length, const unsigned char *values)
+{
+	QLOG_INFO() << "Sending thru MSP I2C stub" << command << length << values;
+}
+
 bool StubMspI2C::connect(const QString &devicePath, int deviceId)
 {
 	QLOG_INFO() << "Connecting to MSP I2C stub, devicePath:" << devicePath << "deviceId" << deviceId;

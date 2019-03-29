@@ -53,6 +53,13 @@ void I2cDevice::sendWord(int reg, int value)
 	}
 }
 
+void I2cDevice::sendBlock(unsigned char reg, unsigned char *values, unsigned char length)
+{
+	if (status() == DeviceInterface::Status::ready) {
+		mCommunicator.sendBlockData(reg, length, values);
+	}
+}
+
 int I2cDevice::read(int reg)
 {
 	QByteArray command(2, '\0');

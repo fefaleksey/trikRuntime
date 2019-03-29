@@ -63,6 +63,17 @@ void I2cCommunicator::send(const QByteArray &data)
 	mI2c.send(data);
 }
 
+void I2cCommunicator::sendBlockData(unsigned char command, unsigned char length, const unsigned char *values)
+{
+	if (!mState.isReady()) {
+		QLOG_ERROR() << "Trying to send data through I2C communicator which is not ready, ignoring";
+		return;
+	}
+
+	QMutexLocker lock(&mLock);
+	mI2c.sendBlockData(command, length, values);
+}
+
 int I2cCommunicator::read(const QByteArray &data)
 {
 	if (!mState.isReady()) {

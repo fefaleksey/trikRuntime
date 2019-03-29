@@ -39,6 +39,9 @@ public slots:
 	/// Sends word to current device, if it is connected.
 	void sendWord(int reg, int value) override;
 
+	/// Sends data block to current device, if it is connected.
+	void sendBlock(unsigned char reg, unsigned char *values, unsigned char length) override;
+
 	/// Reads data by given I2C command number and returns the result.
 	int read(int reg) override;
 

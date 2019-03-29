@@ -39,7 +39,7 @@ public:
 	int read(const QByteArray &data) override;
 	bool connect(const QString &devicePath, int deviceId) override;
 	void disconnect() override;
-
+	void sendBlockData(unsigned char command, unsigned char length, const unsigned char *values) override;
 private:
 	/// Low-level descriptor of I2C device file.
 	int mDeviceFileDescriptor = -1;

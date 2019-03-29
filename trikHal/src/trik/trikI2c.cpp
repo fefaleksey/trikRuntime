@@ -69,6 +69,20 @@ static inline __s32 i2c_smbus_read_i2c_block_data(int file, __u8 command, __u8 l
 	}
 }
 
+static inline __s32 i2c_smbus_write_block_data(int file, __u8 command, __u8 length,
+				 const __u8 *values)
+{
+	union i2c_smbus_data data;
+	int i;
+	if (length > I2C_SMBUS_BLOCK_MAX)
+		length = I2C_SMBUS_BLOCK_MAX;
+	for (i = 1; i <= length; i++)
+		data.block[i] = values[i-1];
+	data.block[0] = length;
+	return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
+				I2C_SMBUS_BLOCK_DATA, &data);
+}
+
 static inline __s32 i2c_smbus_write_word_data(int file, __u8 command, __u16 value)
 {
 	union i2c_smbus_data data;
@@ -95,6 +109,11 @@ void TrikI2c::send(const QByteArray &data)
 	} else {
 		i2c_smbus_write_word_data(mDeviceFileDescriptor, data[0], data[2] | (data[3] << 8));
 	}
+}
+
+void TrikI2c::sendBlockData(__u8 command, __u8 length, const __u8 *values)
+{
+	i2c_smbus_write_block_data(mDeviceFileDescriptor, command, length, values);
 }
 
 int TrikI2c::read(const QByteArray &data)

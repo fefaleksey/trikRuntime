@@ -30,6 +30,8 @@ public:
 	/// Reads data by given I2C command number and returns the result.
 	virtual int read(const QByteArray &data) = 0;
 
+	virtual void sendBlockData(unsigned char command, unsigned char length, const unsigned char *values);
+
 	/// Establish connection with MSP over I2C bus.
 	virtual bool connect(const QString &devicePath, int deviceId) = 0;
 

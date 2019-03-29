@@ -34,6 +34,9 @@ public :
 	/// Sends word to current device, if it is connected.
 	virtual void sendWord(int reg, int value) = 0;
 
+	/// Sends data block to current device, if it is connected.
+	virtual void sendBlock(unsigned char reg, unsigned char *values, unsigned char length) = 0;
+
 	/// Reads data by given I2C command number and returns the result.
 	virtual int read(int reg) = 0;
 };
